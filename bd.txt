@@ -1,0 +1,265 @@
+-- DROP de todas as tabelas, em ordem, utilizando CASCADE
+DROP TABLE IF EXISTS 
+    ALUGUEISATIVOS, 
+    REGISTRODEALUGUEIS, 
+    ALUGUEL, 
+    PAGAMENTO,
+    EQUIPAMENTO, 
+    FORNECEDOR, 
+    CLIENTE 
+CASCADE;
+
+---------------------------
+-- Criação das Tabelas --
+---------------------------
+
+-- CLIENTE
+CREATE TABLE CLIENTE (
+    CPF VARCHAR(11) PRIMARY KEY,
+    NOME VARCHAR(100) NOT NULL,
+    CEP VARCHAR(8) NOT NULL,
+    NUMERO INT NOT NULL,
+    COMPLEMENTO VARCHAR(20),
+    TELEFONE VARCHAR(11),
+    SENHA VARCHAR(30)
+);
+
+-- FORNECEDOR
+CREATE TABLE FORNECEDOR (
+    CNPJ VARCHAR(14) PRIMARY KEY,
+    NOME_FANTASIA VARCHAR(50),
+    TELEFONE VARCHAR(11),
+    EMAIL VARCHAR(100)
+);
+
+-- EQUIPAMENTO
+CREATE TABLE EQUIPAMENTO (
+    ID SERIAL PRIMARY KEY,
+    NOME VARCHAR(100) NOT NULL,
+    CNPJ_FORNECEDOR VARCHAR(14) REFERENCES FORNECEDOR(CNPJ) ON UPDATE CASCADE,
+    QUANTIDADE INT,
+    DESCRICAO VARCHAR(50) NOT NULL,
+    VALOR_DIARIA NUMERIC(10,2) NOT NULL,
+    URL_IMAGEM VARCHAR(1000)
+);
+
+-- ALUGUEL
+CREATE TABLE ALUGUEL (
+    ID SERIAL PRIMARY KEY,
+    CPF_CLIENTE VARCHAR(11) REFERENCES CLIENTE(CPF) ON UPDATE CASCADE ON DELETE CASCADE,
+    QTDE_PARCELAS INT,
+    DATA_INICIO DATE DEFAULT CURRENT_DATE,
+    DATA_FIM DATE DEFAULT (CURRENT_DATE + INTERVAL '30 days')
+);
+
+-- ALUGUEISATIVOS
+CREATE TABLE ALUGUEISATIVOS (
+    ID_ALUGUEL INT REFERENCES ALUGUEL(ID) ON UPDATE CASCADE ON DELETE CASCADE,
+    ID_EQUIPAMENTO INT REFERENCES EQUIPAMENTO(ID),
+    QUANTIDADE INT NOT NULL,
+    VALOR NUMERIC(14,2)
+);
+
+-- REGISTRODEALUGUEIS
+CREATE TABLE REGISTRODEALUGUEIS (
+    ID_ALUGUEL INT,
+    ID_EQUIPAMENTO INT REFERENCES EQUIPAMENTO(ID),
+    QUANTIDADE INT NOT NULL,
+    VALOR NUMERIC(14,2),
+    CONSTRAINT registrodealugueis_id_aluguel_fkey
+      FOREIGN KEY (ID_ALUGUEL) REFERENCES ALUGUEL(ID)
+      ON UPDATE CASCADE ON DELETE CASCADE
+      DEFERRABLE INITIALLY DEFERRED
+);
+
+-- PAGAMENTO
+CREATE TABLE PAGAMENTO (
+    ID_ALUGUEL INT REFERENCES ALUGUEL(ID) ON UPDATE CASCADE ON DELETE CASCADE,
+    PARCELA_NUMERO INT,
+    VALOR_PARCELA NUMERIC(10,2),
+    DATA_VENCIMENTO DATE,
+    STATUS VARCHAR(10) CHECK(STATUS IN ('PAGO','VENCIDO','A PAGAR')),
+    PRIMARY KEY (ID_ALUGUEL, PARCELA_NUMERO)
+);
+
+---------------------------
+-- Criação dos Triggers --
+---------------------------
+
+-- 1) Registra a saída do aluguel ativo em REGISTRODEALUGUEIS antes de DELETE em ALUGUEISATIVOS
+CREATE OR REPLACE FUNCTION registra_saida_aluguel() RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO REGISTRODEALUGUEIS VALUES (OLD.ID_ALUGUEL, OLD.ID_EQUIPAMENTO, OLD.QUANTIDADE, OLD.VALOR);
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER registra_saida_aluguel_trg
+BEFORE DELETE ON ALUGUEISATIVOS
+FOR EACH ROW
+EXECUTE FUNCTION registra_saida_aluguel();
+
+-- 2) Atualiza o estoque quando um registro em ALUGUEISATIVOS é deletado
+CREATE OR REPLACE FUNCTION atualiza_estoque() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE EQUIPAMENTO SET QUANTIDADE = QUANTIDADE + OLD.QUANTIDADE WHERE ID = OLD.ID_EQUIPAMENTO;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER atualiza_estoque_trg
+BEFORE DELETE ON ALUGUEISATIVOS
+FOR EACH ROW
+EXECUTE FUNCTION atualiza_estoque();
+
+-- 3) Dá baixa no estoque ao inserir um registro em ALUGUEISATIVOS
+CREATE OR REPLACE FUNCTION dar_baixa_no_estoque() RETURNS TRIGGER AS $$
+DECLARE
+    qtde_estoque INT;
+BEGIN
+    SELECT QUANTIDADE INTO qtde_estoque FROM EQUIPAMENTO WHERE ID = NEW.ID_EQUIPAMENTO;
+    IF (qtde_estoque < NEW.QUANTIDADE) THEN
+        RAISE EXCEPTION 'A quantidade solicitada excede a quantidade em estoque';
+    ELSE
+        UPDATE EQUIPAMENTO SET QUANTIDADE = QUANTIDADE - NEW.QUANTIDADE WHERE ID = NEW.ID_EQUIPAMENTO;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER dar_baixa_no_estoque_trg
+BEFORE INSERT ON ALUGUEISATIVOS
+FOR EACH ROW
+EXECUTE FUNCTION dar_baixa_no_estoque();
+
+-- 4) Calcula o valor total do item do aluguel em ALUGUEISATIVOS
+CREATE OR REPLACE FUNCTION set_valor_aluguel() RETURNS TRIGGER AS $$
+DECLARE
+    data_inicial DATE;
+    data_final DATE;
+    diaria NUMERIC(10,2);
+BEGIN
+    SELECT DATA_INICIO INTO data_inicial FROM ALUGUEL WHERE ID = NEW.ID_ALUGUEL;
+    SELECT DATA_FIM INTO data_final FROM ALUGUEL WHERE ID = NEW.ID_ALUGUEL;
+    SELECT VALOR_DIARIA INTO diaria FROM EQUIPAMENTO WHERE ID = NEW.ID_EQUIPAMENTO;
+    NEW.VALOR := NEW.QUANTIDADE * (data_final - data_inicial) * diaria;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_valor_aluguel_trg
+BEFORE INSERT ON ALUGUEISATIVOS
+FOR EACH ROW
+EXECUTE FUNCTION set_valor_aluguel();
+
+-- 5) [NOVA] Atualiza os pagamentos automaticamente após a inserção em ALUGUEISATIVOS
+CREATE OR REPLACE FUNCTION atualizar_pagamentos() RETURNS TRIGGER AS $$
+DECLARE
+    valor_total NUMERIC := 0;
+    parcelas INT;
+    valor_parcela NUMERIC(10,2);
+    i INT;
+BEGIN
+    -- Recupera a quantidade de parcelas definida no aluguel
+    SELECT QTDE_PARCELAS INTO parcelas FROM ALUGUEL WHERE ID = NEW.ID_ALUGUEL;
+    
+    -- Calcula o valor total do aluguel considerando todos os itens
+    SELECT COALESCE(SUM(VALOR), 0) INTO valor_total 
+      FROM ALUGUEISATIVOS 
+      WHERE ID_ALUGUEL = NEW.ID_ALUGUEL;
+      
+    IF parcelas > 0 THEN
+        valor_parcela := valor_total / parcelas;
+        -- Remove registros antigos de pagamentos para evitar duplicação
+        DELETE FROM PAGAMENTO WHERE ID_ALUGUEL = NEW.ID_ALUGUEL;
+        -- Cria os pagamentos conforme a quantidade de parcelas
+        FOR i IN 1..parcelas LOOP
+            INSERT INTO PAGAMENTO (ID_ALUGUEL, PARCELA_NUMERO, VALOR_PARCELA, DATA_VENCIMENTO, STATUS)
+            VALUES (NEW.ID_ALUGUEL, i, valor_parcela, CURRENT_DATE + INTERVAL '30 days' * i, 'A PAGAR');
+        END LOOP;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER atualizar_pagamentos_trg
+AFTER INSERT ON ALUGUEISATIVOS
+FOR EACH ROW
+EXECUTE FUNCTION atualizar_pagamentos();
+
+---------------------------
+-- Atualização dos Seriais --
+---------------------------
+SELECT setval('equipamento_id_seq', (SELECT MAX(ID) FROM EQUIPAMENTO));
+SELECT setval('aluguel_id_seq', (SELECT MAX(ID) FROM ALUGUEL));
+
+---------------------------
+-- Inserções (POVOAMENTO) --
+---------------------------
+
+-- Inserções na tabela CLIENTE
+INSERT INTO CLIENTE VALUES
+('11111111111', 'Alexander ', '39272104', 406, 'Casa', '31982679282', 'alequissander'),
+('22222222222', 'Pedro ', '30110100', 292, 'Casa', '31988888888', 'pedrito'),
+('33333333333', 'Maurílio', '30110200', 612, 'Casa', '31977777777', 'mistermaurilio'),
+('44444444444', 'Davi ', '30110300', 101, 'Bloco 10, Apto 102', '31966666666', 'superautopets'),
+('55555555555', 'Eduardo', '30110400', 983, 'Casa', '31955555555', 'dudu123'),
+('66666666666', 'Iuri ', '30110500', 482, 'Casa', '31944444444', 'iuri456');
+
+-- Inserções na tabela FORNECEDOR
+INSERT INTO FORNECEDOR VALUES
+('12312312301000', 'Betoneiras Douradas LTDA.', 3133223321, 'betodourada@gmail.com'),
+('45645645601000', 'Murilo Bittencourt Inc.', 3133223322, 'muribitec@gmail.com'),
+('78978979801000', 'Construto e Equipamentos LTDA.', 3133223323, 'construtoeqp@gmail.com'),
+('11122233301000', 'Savassi Equipamentos', 3133223324, 'savassieqp@gmail.com'),
+('44455566601000', 'FreeGlut LTDA.', 3133223325, 'freeglut@gmail.com');
+
+-- Inserções na tabela EQUIPAMENTO
+INSERT INTO EQUIPAMENTO (ID, NOME, CNPJ_FORNECEDOR, QUANTIDADE, DESCRICAO, VALOR_DIARIA, URL_IMAGEM) VALUES
+(1, 'Betoneira', '12312312301000', 300, '400 litros, 220v', 60.00, 'https://img.freepik.com/fotos-premium/maquinaria-industrial-do-misturador-de-cimento-no-canteiro-de-obras_56854-3133.jpg?w=900'),
+(2, 'Kit EPI', '45645645601000', 550, 'Capacete, luvas, botina 40, oculos protetor', 8.00, 'https://img.freepik.com/fotos-gratis/luvas-de-seguranca-de-construcao-plana-e-mascara-medica_23-2148784095.jpg?t=st=1737938300~exp=1737941900~hmac=357eb96254e3720f4e3b49d82a104bf633ccacb9b20349cc74d38c3d208462cc&w=740'),
+(3, 'Martelos', '78978979801000', 120, 'Martelo de unha, martelo chapeador e martelo pena', 7.00, 'https://img.freepik.com/fotos-gratis/martelos-de-construcao-ainda-vida_23-2150563178.jpg?t=st=1737938350~exp=1737941950~hmac=67887079eccdd68d2d79bc20480771b11d7ce854da85dbd562805790b66bc617&w=740'),
+(4, 'Aindaime 4 unidades', '44455566601000', 80, '1,00 x 1,50m', 20.00, 'https://img.freepik.com/fotos-gratis/bela-foto-de-barras-de-aco-de-metal-no-predio_181624-26081.jpg?t=st=1737938576~exp=1737942176~hmac=483c79d75ad5ffb3077bea3cf0adf4881a812762046314e309a3d1f551eb944b&w=900'),
+(5, 'Lixadeira', '11122233301000', 800, 'Esmerilhadeira 115mm 880w', 10.00, 'https://img.freepik.com/fotos-gratis/homem-trabalhando-com-um-moedor-angular-com-brilhos-dele_181624-29243.jpg?t=st=1737938682~exp=1737942282~hmac=8f06b0349796131fbc9975ad0190379dd9ae65aeaca5d2eb19b975beb6665c04&w=900');
+
+-- Inserções na tabela ALUGUEL
+INSERT INTO ALUGUEL (CPF_CLIENTE, QTDE_PARCELAS, DATA_INICIO, DATA_FIM) VALUES
+('11111111111', 3, '2024-02-01', '2025-03-01'),
+('22222222222', 2, '2024-02-05', '2025-03-05'),
+('33333333333', 4, '2024-02-10', '2025-03-10'),
+('44444444444', 1, '2024-02-15', '2025-03-15'),
+('55555555555', 6, '2024-02-20', '2025-03-20'),
+('66666666666', 2, '2024-03-01', '2024-04-01');
+
+-- Inserções na tabela ALUGUEISATIVOS
+INSERT INTO ALUGUEISATIVOS (ID_ALUGUEL, ID_EQUIPAMENTO, QUANTIDADE, VALOR) VALUES
+(1, 1, 2, NULL), -- Betoneira (valor calculado pelo trigger)
+(1, 2, 5, NULL), -- Kit EPI
+(2, 3, 10, NULL), -- Martelos
+(3, 4, 4, NULL), -- Andaimes
+(4, 5, 1, NULL);  -- Lixadeira
+
+-- Inserções na tabela REGISTRODEALUGUEIS (simulação de registros encerrados)
+INSERT INTO REGISTRODEALUGUEIS (ID_ALUGUEL, ID_EQUIPAMENTO, QUANTIDADE, VALOR) VALUES
+(1, 1, 2, 3600.00), -- Betoneira (2 unidades * 30 dias * R$60)
+(1, 2, 5, 1200.00), -- Kit EPI (5 unidades * 30 dias * R$8)
+(2, 3, 10, 2100.00), -- Martelos (10 unidades * 30 dias * R$7)
+(3, 4, 4, 2400.00), -- Andaimes (4 unidades * 30 dias * R$20)
+(4, 5, 1, 300.00),  -- Lixadeira (1 unidade * 30 dias * R$10)
+(6, 1, 1, 1860.00),  -- Betoneira: 31 dias * R$60 = 1860.00
+(6, 2, 1, 248.00),   -- Kit EPI: 31 dias * R$8 = 248.00
+(6, 3, 1, 217.00),   -- Martelos: 31 dias * R$7 = 217.00
+(6, 4, 1, 620.00),   -- Aindaime: 31 dias * R$20 = 620.00
+(6, 5, 1, 310.00);   -- Lixadeira: 31 dias * R$10 = 310.00
+
+---------------------------
+-- Consultas para Verificação --
+---------------------------
+SELECT * FROM EQUIPAMENTO;
+SELECT * FROM FORNECEDOR;
+SELECT * FROM CLIENTE;
+	SELECT * FROM ALUGUEL;
+SELECT * FROM ALUGUEISATIVOS;
+SELECT * FROM PAGAMENTO;
+SELECT * FROM REGISTRODEALUGUEIS;
