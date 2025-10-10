@@ -87,17 +87,41 @@ RitterConstruct é um sistema web completo para gerenciamento de aluguel de equi
 
 ## 🚀 Como Executar
 
+### **Execução Rápida (Recomendado)**
+```bash
+# Dar permissão aos scripts (apenas na primeira vez)
+chmod +x *.sh
+
+# Iniciar o projeto (configura banco automaticamente se necessário)
+./start.sh
+
+# Parar o projeto
+./stop.sh
+```
+
+> **📝 Nota:** O script `start.sh` automaticamente detecta se o banco de dados precisa ser configurado e executa `setup-database.sh` quando necessário.
+
+### **Migração de Banco de Dados**
+Se você já tem um banco de dados chamado "trabalho" e quer migrar para "RitterConstruct":
+```bash
+# Migrar dados do banco antigo para o novo
+./migrate-database.sh
+```
+
 ### **Pré-requisitos**
 - Node.js (v14 ou superior)
 - PostgreSQL (v12 ou superior)
 - Navegador web moderno
 
-### **Configuração do Banco de Dados**
-1. Instale o PostgreSQL
-2. Execute o script `bd.txt` para criar as tabelas e triggers
-3. Configure as credenciais em `Back-end/server/config/db.js`
+### **Configuração Manual**
 
-### **Configuração do Backend**
+#### **Configuração do Banco de Dados**
+1. Instale o PostgreSQL
+2. Crie o banco de dados: `createdb RitterConstruct`
+3. Execute o script: `psql -d RitterConstruct -f bd.txt`
+4. Configure as credenciais em `Back-end/server/config/db.js`
+
+#### **Configuração do Backend**
 ```bash
 cd Back-end/server
 npm install
@@ -105,7 +129,7 @@ npm start
 ```
 O servidor será executado em `http://localhost:3000`
 
-### **Configuração do Frontend**
+#### **Configuração do Frontend**
 1. Abra o arquivo `Front-end/index.html` em um navegador
 2. Ou use um servidor local (Live Server, http-server, etc.)
 
@@ -129,6 +153,10 @@ trabalho/
 │   └── js/                  # Scripts JavaScript
 ├── Diagramas/               # Documentação visual
 ├── bd.txt                   # Script do banco de dados
+├── setup-database.sh        # Script de configuração do banco
+├── migrate-database.sh      # Script de migração do banco
+├── start.sh                 # Script de inicialização
+├── stop.sh                  # Script para parar o projeto
 └── README.md
 ```
 

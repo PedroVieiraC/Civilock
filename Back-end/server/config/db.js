@@ -3,8 +3,9 @@ const { Client } = require('pg');
 const con = new Client({
   host: 'localhost',
   user: 'postgres',
-  password: '7384',
-  database: 'trabalho',
+  password: 'postgres',
+  database: 'RitterConstruct',
+  port: 5432,
 });
 
 con.connect()
@@ -12,4 +13,3 @@ con.connect()
   .catch(err => console.error("Erro ao conectar ao banco:", err));
 
 module.exports = con;
-

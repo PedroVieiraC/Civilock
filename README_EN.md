@@ -87,17 +87,41 @@ RitterConstruct is a complete web system for managing construction equipment ren
 
 ## 🚀 How to Run
 
+### **Quick Start (Recommended)**
+```bash
+# Grant permissions to scripts (first time only)
+chmod +x *.sh
+
+# Start the project (automatically configures database if needed)
+./start.sh
+
+# Stop the project
+./stop.sh
+```
+
+> **📝 Note:** The `start.sh` script automatically detects if the database needs to be set up and runs `setup-database.sh` when necessary.
+
+### **Database Migration**
+If you already have a database called "trabalho" and want to migrate to "RitterConstruct":
+```bash
+# Migrate data from old database to new one
+./migrate-database.sh
+```
+
 ### **Prerequisites**
 - Node.js (v14 or higher)
 - PostgreSQL (v12 or higher)
 - Modern web browser
 
-### **Database Setup**
-1. Install PostgreSQL
-2. Execute the `bd.txt` script to create tables and triggers
-3. Configure credentials in `Back-end/server/config/db.js`
+### **Manual Setup**
 
-### **Backend Setup**
+#### **Database Setup**
+1. Install PostgreSQL
+2. Create database: `createdb RitterConstruct`
+3. Execute script: `psql -d RitterConstruct -f bd.txt`
+4. Configure credentials in `Back-end/server/config/db.js`
+
+#### **Backend Setup**
 ```bash
 cd Back-end/server
 npm install
@@ -105,7 +129,7 @@ npm start
 ```
 The server will run at `http://localhost:3000`
 
-### **Frontend Setup**
+#### **Frontend Setup**
 1. Open the `Front-end/index.html` file in a browser
 2. Or use a local server (Live Server, http-server, etc.)
 
@@ -129,6 +153,10 @@ trabalho/
 │   └── js/                  # JavaScript scripts
 ├── Diagramas/               # Visual documentation
 ├── bd.txt                   # Database script
+├── setup-database.sh        # Database setup script
+├── migrate-database.sh      # Database migration script
+├── start.sh                 # Startup script
+├── stop.sh                  # Stop script
 └── README.md
 ```
 

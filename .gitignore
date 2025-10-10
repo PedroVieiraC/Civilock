@@ -1,0 +1,49 @@
+# RitterConstruct Project - Git Ignore File
+# ==========================================
+
+# Log files
+*.log
+backend.log
+Back-end/server/backend.log
+
+# Process ID files
+*.pid
+backend.pid
+Back-end/server/backend.pid
+
+# Backup files
+*.backup
+*.bak
+Back-end/server/config/db.js.backup
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
