@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# DepÃ³sito Vieira - Database Migration Script
+# Depósito Vieira - Database Migration Script
 # This script migrates data from 'trabalho' to 'deposito_vieira' database
 
-echo "🔄 DepÃ³sito Vieira - Database Migration"
+echo "🔄 Depósito Vieira - Database Migration"
 echo "======================================"
 echo ""
 

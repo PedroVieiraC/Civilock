@@ -1,8 +1,8 @@
-# DepÃ³sito Vieira - Construction Equipment Rental System
+# Depósito Vieira - Construction Equipment Rental System
 
 ## 📋 Project Description
 
-DepÃ³sito Vieira is a complete web system for managing construction equipment rentals, developed as a Database course project. The system allows customers to rent equipment, administrators to manage inventory and suppliers, and generates detailed operational reports.
+Depósito Vieira is a complete web system for managing construction equipment rentals, developed as a Database course project. The system allows customers to rent equipment, administrators to manage inventory and suppliers, and generates detailed operational reports.
 
 ## 🏗️ Project Architecture
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# DepÃ³sito Vieira - Database Setup Script
+# Depósito Vieira - Database Setup Script
 # This script creates and populates the PostgreSQL database
 
-echo "🗄️  DepÃ³sito Vieira - Database Setup"
+echo "🗄️  Depósito Vieira - Database Setup"
 echo "===================================="
 echo ""
 

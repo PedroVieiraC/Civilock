@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # ====================================
-# DepÃ³sito Vieira Project Stop Script
+# Depósito Vieira Project Stop Script
 # ====================================
 # Este script para todos os processos relacionados ao projeto
 # e fecha as aplicações abertas de forma ordenada
 
-echo "🛑 DepÃ³sito Vieira - Stopping All Services"
+echo "🛑 Depósito Vieira - Stopping All Services"
 echo "============================================"
 echo ""
 
@@ -95,7 +95,7 @@ close_project_browser() {
 show_database_status() {
     echo -e "${PURPLE}🗄️  Database status:${NC}"
     
-    # Check for active DepÃ³sito Vieira connections
+    # Check for active Depósito Vieira connections
     DB_CONNECTIONS=$(ps aux | grep "postgres.*deposito_vieira" | grep -v grep | wc -l)
     
     if [ $DB_CONNECTIONS -gt 0 ]; then
@@ -129,7 +129,7 @@ cleanup_project_files() {
 show_final_status() {
     echo ""
     echo -e "${GREEN}============================================${NC}"
-    echo -e "${GREEN}🎉 DepÃ³sito Vieira shutdown completed!${NC}"
+    echo -e "${GREEN}🎉 Depósito Vieira shutdown completed!${NC}"
     echo -e "${GREEN}============================================${NC}"
     echo ""
     echo -e "${BLUE}📋 Summary:${NC}"

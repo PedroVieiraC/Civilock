@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# DepÃ³sito Vieira - Project Startup Script
+# Depósito Vieira - Project Startup Script
 # This script starts the backend server and opens the frontend
 
-echo "🏗️  DepÃ³sito Vieira - Construction Equipment Rental System"
+echo "🏗️  Depósito Vieira - Construction Equipment Rental System"
 echo "=========================================================="
 echo ""
 
@@ -210,7 +210,7 @@ else
 fi
 
 echo ""
-echo -e "${GREEN}🎉 DepÃ³sito Vieira is now running!${NC}"
+echo -e "${GREEN}🎉 Depósito Vieira is now running!${NC}"
 echo ""
 echo -e "${BLUE}📱 Frontend:${NC} file://$FRONTEND_PATH"
 echo -e "${BLUE}🔧 Backend API:${NC} http://localhost:3000"

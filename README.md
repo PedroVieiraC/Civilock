@@ -1,8 +1,8 @@
-# DepÃ³sito Vieira - Sistema de Aluguel de Equipamentos de Construção
+# Depósito Vieira - Sistema de Aluguel de Equipamentos de Construção
 
 ## 📋 Descrição do Projeto
 
-DepÃ³sito Vieira é um sistema web completo para gerenciamento de aluguel de equipamentos de construção, desenvolvido como trabalho da disciplina de Banco de Dados. O sistema permite que clientes aluguem equipamentos, administradores gerenciem o estoque e fornecedores, além de gerar relatórios detalhados sobre as operações.
+Depósito Vieira é um sistema web completo para gerenciamento de aluguel de equipamentos de construção, desenvolvido como trabalho da disciplina de Banco de Dados. O sistema permite que clientes aluguem equipamentos, administradores gerenciem o estoque e fornecedores, além de gerar relatórios detalhados sobre as operações.
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -102,7 +102,7 @@ chmod +x *.sh
 > **📝 Nota:** O script `start.sh` automaticamente detecta se o banco de dados precisa ser configurado e executa `setup-database.sh` quando necessário.
 
 ### **Migração de Banco de Dados**
-Se você já tem um banco de dados chamado "trabalho" e quer migrar para "DepÃ³sito Vieira":
+Se você já tem um banco de dados chamado "trabalho" e quer migrar para "Depósito Vieira":
 ```bash
 # Migrar dados do banco antigo para o novo
 ./migrate-database.sh
