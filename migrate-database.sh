@@ -17,16 +17,20 @@ NC='\033[0m' # No Color
 # Database configuration
 OLD_DB_NAME="trabalho"
 NEW_DB_NAME="deposito_vieira"
-DB_USER="postgres"
-DB_HOST="localhost"
-DB_PORT="5432"
+ENV_FILE="Back-end/server/.env"
+if [ -f "$ENV_FILE" ]; then set -a; . "$ENV_FILE"; set +a; fi
+DB_USER="${DB_USER:-postgres}"
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
 
 echo -e "${BLUE}Migration from '$OLD_DB_NAME' to '$NEW_DB_NAME'${NC}"
 echo ""
 
 # Prompt for database password
-read -s -p "Enter PostgreSQL password for user '$DB_USER': " DB_PASSWORD
-echo ""
+if [ -z "$DB_PASSWORD" ]; then
+  read -s -p "Enter PostgreSQL password for user '$DB_USER': " DB_PASSWORD
+  echo ""
+fi
 echo ""
 
 # Set password for all operations

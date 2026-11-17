@@ -119,7 +119,7 @@ Se você já tem um banco de dados chamado "trabalho" e quer migrar para "Depós
 1. Instale o PostgreSQL
 2. Crie o banco de dados: `createdb deposito_vieira`
 3. Execute o script: `psql -d deposito_vieira -f bd.txt`
-4. Configure as credenciais em `Back-end/server/config/db.js`
+4. Copie `Back-end/server/.env.example` para `Back-end/server/.env` e preencha as credenciais (o `db.js` lê esse arquivo)
 
 #### **Configuração do Backend**
 ```bash

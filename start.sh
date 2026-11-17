@@ -61,25 +61,18 @@ echo ""
 
 # Check if database is set up
 echo -e "${BLUE}Checking database setup...${NC}"
-DB_CONFIG_FILE="$PROJECT_ROOT/Back-end/server/config/db.js"
+ENV_FILE="$PROJECT_ROOT/Back-end/server/.env"
 DATABASE_SETUP_NEEDED=false
 
-# Check if database configuration exists and looks correct
-if [ ! -f "$DB_CONFIG_FILE" ]; then
+# The backend reads its database settings from Back-end/server/.env
+if [ ! -f "$ENV_FILE" ]; then
     DATABASE_SETUP_NEEDED=true
-    echo -e "${YELLOW}⚠️  Database configuration file not found${NC}"
-elif ! grep -q "database.*deposito_vieira" "$DB_CONFIG_FILE" 2>/dev/null; then
-    DATABASE_SETUP_NEEDED=true
-    echo -e "${YELLOW}⚠️  Database configuration appears incomplete${NC}"
+    echo -e "${YELLOW}⚠️  Back-end/server/.env not found${NC}"
 else
-    # Try to test database connection by checking if we can read from db config
-    DB_HOST=$(grep -o "host.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "localhost")
-    DB_USER=$(grep -o "user.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "postgres")
-    DB_NAME=$(grep -o "database.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "deposito_vieira")
-    
+    set -a; . "$ENV_FILE"; set +a
     if command_exists psql; then
         # Try to connect and check if tables exist (non-interactive test)
-        if psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1 FROM EQUIPAMENTO LIMIT 1;" >/dev/null 2>&1; then
+        if PGPASSWORD="$DB_PASSWORD" psql -h "${DB_HOST:-localhost}" -p "${DB_PORT:-5432}" -U "${DB_USER:-postgres}" -d "${DB_NAME:-deposito_vieira}" -c "SELECT 1 FROM EQUIPAMENTO LIMIT 1;" >/dev/null 2>&1; then
             echo -e "${GREEN}✅ Database connection successful${NC}"
         else
             DATABASE_SETUP_NEEDED=true

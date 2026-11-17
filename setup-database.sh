@@ -119,38 +119,16 @@ else
     exit 1
 fi
 
-# Update database configuration in the backend
-echo -e "${BLUE}Updating backend database configuration...${NC}"
-DB_CONFIG_FILE="Back-end/server/config/db.js"
-
-if [ -f "$DB_CONFIG_FILE" ]; then
-    # Create a backup
-    cp "$DB_CONFIG_FILE" "$DB_CONFIG_FILE.backup"
-    
-    # Update the configuration
-    cat > "$DB_CONFIG_FILE" << EOF
-const { Client } = require('pg');
-
-const con = new Client({
-  host: '$DB_HOST',
-  user: '$DB_USER',
-  password: '$DB_PASSWORD',
-  database: '$DB_NAME',
-  port: $DB_PORT,
-});
-
-con.connect()
-  .then(() => console.log("Banco de dados conectado"))
-  .catch(err => console.error("Erro ao conectar ao banco:", err));
-
-module.exports = con;
-EOF
-
-    echo -e "${GREEN}✅ Database configuration updated${NC}"
-else
-    echo -e "${YELLOW}⚠️  Database configuration file not found${NC}"
-    echo -e "${YELLOW}Please manually update: $DB_CONFIG_FILE${NC}"
-fi
+# Save database settings in the backend .env (read by config/db.js)
+echo -e "${BLUE}Saving backend database configuration (.env)...${NC}"
+cat > "$ENV_FILE" << ENVEOF
+DB_HOST=$DB_HOST
+DB_PORT=$DB_PORT
+DB_USER=$DB_USER
+DB_PASSWORD=$DB_PASSWORD
+DB_NAME=$DB_NAME
+ENVEOF
+echo -e "${GREEN}✅ $ENV_FILE saved${NC}"
 
 # Verify data was loaded correctly
 echo -e "${BLUE}Verifying database setup...${NC}"

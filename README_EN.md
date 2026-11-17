@@ -119,7 +119,7 @@ If you already have a database called "trabalho" and want to migrate to "deposit
 1. Install PostgreSQL
 2. Create database: `createdb deposito_vieira`
 3. Execute script: `psql -d deposito_vieira -f bd.txt`
-4. Configure credentials in `Back-end/server/config/db.js`
+4. Copy `Back-end/server/.env.example` to `Back-end/server/.env` and fill in the credentials (`db.js` reads it)
 
 #### **Backend Setup**
 ```bash
