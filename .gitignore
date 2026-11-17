@@ -47,3 +47,10 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# protocolo (processo fica só na máquina; repositório é público)
+memoria/
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+secrets/
