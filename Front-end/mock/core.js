@@ -43,10 +43,10 @@
         if (method !== 'GET') Mock.save();
         return out && out.status && out.body !== undefined ? json(out.status, out.body) : json(200, out === undefined ? {} : out);
       } catch (e) {
-        return json(e.status || 500, { error: e.message });
+        return json(e.status || 500, { message: e.message, error: e.message });
       }
     }
-    return json(404, { error: 'Rota não encontrada: ' + method + ' ' + path });
+    return json(404, { message: 'Rota não encontrada: ' + method + ' ' + path });
   };
 
   // Faixa de aviso
