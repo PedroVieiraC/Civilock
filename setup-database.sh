@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# RitterConstruct - Database Setup Script
+# DepÃ³sito Vieira - Database Setup Script
 # This script creates and populates the PostgreSQL database
 
-echo "🗄️  RitterConstruct - Database Setup"
+echo "🗄️  DepÃ³sito Vieira - Database Setup"
 echo "===================================="
 echo ""
 
@@ -15,7 +15,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Database configuration (adjust these if needed)
-DB_NAME="RitterConstruct"
+DB_NAME="deposito_vieira"
 DB_USER="postgres"
 DB_HOST="localhost"
 DB_PORT="5432"

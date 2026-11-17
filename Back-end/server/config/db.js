@@ -4,7 +4,7 @@ const con = new Client({
   host: 'localhost',
   user: 'postgres',
   password: 'postgres',
-  database: 'RitterConstruct',
+  database: 'deposito_vieira',
   port: 5432,
 });
 

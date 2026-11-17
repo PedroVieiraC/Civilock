@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # ====================================
-# RitterConstruct Project Stop Script
+# DepÃ³sito Vieira Project Stop Script
 # ====================================
 # Este script para todos os processos relacionados ao projeto
 # e fecha as aplicações abertas de forma ordenada
 
-echo "🛑 RitterConstruct - Stopping All Services"
+echo "🛑 DepÃ³sito Vieira - Stopping All Services"
 echo "============================================"
 echo ""
 
@@ -95,14 +95,14 @@ close_project_browser() {
 show_database_status() {
     echo -e "${PURPLE}🗄️  Database status:${NC}"
     
-    # Check for active RitterConstruct connections
-    DB_CONNECTIONS=$(ps aux | grep "postgres.*RitterConstruct" | grep -v grep | wc -l)
+    # Check for active DepÃ³sito Vieira connections
+    DB_CONNECTIONS=$(ps aux | grep "postgres.*deposito_vieira" | grep -v grep | wc -l)
     
     if [ $DB_CONNECTIONS -gt 0 ]; then
-        echo -e "${BLUE}Found $DB_CONNECTIONS active connection(s) to RitterConstruct${NC}"
+        echo -e "${BLUE}Found $DB_CONNECTIONS active connection(s) to deposito_vieira${NC}"
         echo -e "${YELLOW}These connections will close automatically when clients disconnect${NC}"
     else
-        echo -e "${BLUE}No active connections to RitterConstruct database${NC}"
+        echo -e "${BLUE}No active connections to deposito_vieira database${NC}"
     fi
     
     echo -e "${BLUE}PostgreSQL server continues running (system service)${NC}"
@@ -129,7 +129,7 @@ cleanup_project_files() {
 show_final_status() {
     echo ""
     echo -e "${GREEN}============================================${NC}"
-    echo -e "${GREEN}🎉 RitterConstruct shutdown completed!${NC}"
+    echo -e "${GREEN}🎉 DepÃ³sito Vieira shutdown completed!${NC}"
     echo -e "${GREEN}============================================${NC}"
     echo ""
     echo -e "${BLUE}📋 Summary:${NC}"

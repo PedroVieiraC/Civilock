@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# RitterConstruct - Project Startup Script
+# DepÃ³sito Vieira - Project Startup Script
 # This script starts the backend server and opens the frontend
 
-echo "🏗️  RitterConstruct - Construction Equipment Rental System"
+echo "🏗️  DepÃ³sito Vieira - Construction Equipment Rental System"
 echo "=========================================================="
 echo ""
 
@@ -68,14 +68,14 @@ DATABASE_SETUP_NEEDED=false
 if [ ! -f "$DB_CONFIG_FILE" ]; then
     DATABASE_SETUP_NEEDED=true
     echo -e "${YELLOW}⚠️  Database configuration file not found${NC}"
-elif ! grep -q "database.*RitterConstruct" "$DB_CONFIG_FILE" 2>/dev/null; then
+elif ! grep -q "database.*deposito_vieira" "$DB_CONFIG_FILE" 2>/dev/null; then
     DATABASE_SETUP_NEEDED=true
     echo -e "${YELLOW}⚠️  Database configuration appears incomplete${NC}"
 else
     # Try to test database connection by checking if we can read from db config
     DB_HOST=$(grep -o "host.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "localhost")
     DB_USER=$(grep -o "user.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "postgres")
-    DB_NAME=$(grep -o "database.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "RitterConstruct")
+    DB_NAME=$(grep -o "database.*'[^']*'" "$DB_CONFIG_FILE" 2>/dev/null | cut -d"'" -f2 || echo "deposito_vieira")
     
     if command_exists psql; then
         # Try to connect and check if tables exist (non-interactive test)
@@ -210,7 +210,7 @@ else
 fi
 
 echo ""
-echo -e "${GREEN}🎉 RitterConstruct is now running!${NC}"
+echo -e "${GREEN}🎉 DepÃ³sito Vieira is now running!${NC}"
 echo ""
 echo -e "${BLUE}📱 Frontend:${NC} file://$FRONTEND_PATH"
 echo -e "${BLUE}🔧 Backend API:${NC} http://localhost:3000"

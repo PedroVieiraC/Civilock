@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# RitterConstruct - Database Migration Script
-# This script migrates data from 'trabalho' to 'RitterConstruct' database
+# DepÃ³sito Vieira - Database Migration Script
+# This script migrates data from 'trabalho' to 'deposito_vieira' database
 
-echo "🔄 RitterConstruct - Database Migration"
+echo "🔄 DepÃ³sito Vieira - Database Migration"
 echo "======================================"
 echo ""
 
@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Database configuration
 OLD_DB_NAME="trabalho"
-NEW_DB_NAME="RitterConstruct"
+NEW_DB_NAME="deposito_vieira"
 DB_USER="postgres"
 DB_HOST="localhost"
 DB_PORT="5432"

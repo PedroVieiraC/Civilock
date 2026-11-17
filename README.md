@@ -1,8 +1,8 @@
-# RitterConstruct - Sistema de Aluguel de Equipamentos de Construção
+# DepÃ³sito Vieira - Sistema de Aluguel de Equipamentos de Construção
 
 ## 📋 Descrição do Projeto
 
-RitterConstruct é um sistema web completo para gerenciamento de aluguel de equipamentos de construção, desenvolvido como trabalho da disciplina de Banco de Dados. O sistema permite que clientes aluguem equipamentos, administradores gerenciem o estoque e fornecedores, além de gerar relatórios detalhados sobre as operações.
+DepÃ³sito Vieira é um sistema web completo para gerenciamento de aluguel de equipamentos de construção, desenvolvido como trabalho da disciplina de Banco de Dados. O sistema permite que clientes aluguem equipamentos, administradores gerenciem o estoque e fornecedores, além de gerar relatórios detalhados sobre as operações.
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -102,7 +102,7 @@ chmod +x *.sh
 > **📝 Nota:** O script `start.sh` automaticamente detecta se o banco de dados precisa ser configurado e executa `setup-database.sh` quando necessário.
 
 ### **Migração de Banco de Dados**
-Se você já tem um banco de dados chamado "trabalho" e quer migrar para "RitterConstruct":
+Se você já tem um banco de dados chamado "trabalho" e quer migrar para "DepÃ³sito Vieira":
 ```bash
 # Migrar dados do banco antigo para o novo
 ./migrate-database.sh
@@ -117,8 +117,8 @@ Se você já tem um banco de dados chamado "trabalho" e quer migrar para "Ritter
 
 #### **Configuração do Banco de Dados**
 1. Instale o PostgreSQL
-2. Crie o banco de dados: `createdb RitterConstruct`
-3. Execute o script: `psql -d RitterConstruct -f bd.txt`
+2. Crie o banco de dados: `createdb deposito_vieira`
+3. Execute o script: `psql -d deposito_vieira -f bd.txt`
 4. Configure as credenciais em `Back-end/server/config/db.js`
 
 #### **Configuração do Backend**

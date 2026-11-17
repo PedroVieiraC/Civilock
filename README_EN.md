@@ -1,8 +1,8 @@
-# RitterConstruct - Construction Equipment Rental System
+# DepÃ³sito Vieira - Construction Equipment Rental System
 
 ## 📋 Project Description
 
-RitterConstruct is a complete web system for managing construction equipment rentals, developed as a Database course project. The system allows customers to rent equipment, administrators to manage inventory and suppliers, and generates detailed operational reports.
+DepÃ³sito Vieira is a complete web system for managing construction equipment rentals, developed as a Database course project. The system allows customers to rent equipment, administrators to manage inventory and suppliers, and generates detailed operational reports.
 
 ## 🏗️ Project Architecture
 
@@ -102,7 +102,7 @@ chmod +x *.sh
 > **📝 Note:** The `start.sh` script automatically detects if the database needs to be set up and runs `setup-database.sh` when necessary.
 
 ### **Database Migration**
-If you already have a database called "trabalho" and want to migrate to "RitterConstruct":
+If you already have a database called "trabalho" and want to migrate to "deposito_vieira":
 ```bash
 # Migrate data from old database to new one
 ./migrate-database.sh
@@ -117,8 +117,8 @@ If you already have a database called "trabalho" and want to migrate to "RitterC
 
 #### **Database Setup**
 1. Install PostgreSQL
-2. Create database: `createdb RitterConstruct`
-3. Execute script: `psql -d RitterConstruct -f bd.txt`
+2. Create database: `createdb deposito_vieira`
+3. Execute script: `psql -d deposito_vieira -f bd.txt`
 4. Configure credentials in `Back-end/server/config/db.js`
 
 #### **Backend Setup**
