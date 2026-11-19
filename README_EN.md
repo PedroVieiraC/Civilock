@@ -1,4 +1,4 @@
-# Depósito Vieira - Construction Equipment Rental System
+# Civilock - Construction Equipment Rental System
 
 ## 📋 Project Description
 

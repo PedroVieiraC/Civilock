@@ -1,8 +1,8 @@
-# Depósito Vieira - Sistema de Aluguel de Equipamentos de Construção
+# Civilock - Locadora de Equipamentos para Construção Civil
 
 ## 📋 Descrição do Projeto
 
-Depósito Vieira é um sistema web completo para gerenciamento de aluguel de equipamentos de construção, desenvolvido como trabalho da disciplina de Banco de Dados. O sistema permite que clientes aluguem equipamentos, administradores gerenciem o estoque e fornecedores, além de gerar relatórios detalhados sobre as operações.
+Civilock (antes chamado Depósito Vieira) é um sistema web completo para gerenciamento de aluguel de equipamentos de construção, desenvolvido como trabalho da disciplina de Banco de Dados. O sistema permite que clientes aluguem equipamentos, administradores gerenciem o estoque e fornecedores, além de gerar relatórios detalhados sobre as operações.
 
 ## 🏗️ Arquitetura do Projeto
 
