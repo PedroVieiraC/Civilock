@@ -1,5 +1,5 @@
-title: "Depósito Vieira"
-summary: "Sistema web de aluguel de equipamentos de construção, com catálogo, carrinho, aluguel em parcelas e painel administrativo, feito para a disciplina de Banco de Dados."
+title: "Civilock"
+summary: "Locadora de equipamentos para construção civil, com catálogo, carrinho, aluguel em parcelas e painel administrativo, feito para a disciplina de Banco de Dados."
 category: web
 problem: "Controlar o aluguel de equipamentos de uma locadora de construção, com estoque, clientes, fornecedores, pagamentos e relatórios em um só sistema."
 approach: "API REST em Node.js com Express em camadas (rotas, controladores, serviços e repositórios) sobre PostgreSQL, com triggers e procedures para estoque, cálculos e pagamentos. Front-end estático em HTML, CSS, Bootstrap 5 e JavaScript puro, com uma versão de demonstração que simula a API no navegador, sem banco. Todos os dados são fictícios."
